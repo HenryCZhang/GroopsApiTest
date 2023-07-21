@@ -6,22 +6,6 @@ import { api } from "~/utils/api";
 
 import AddDeliveryAddress from "./addAddress";
 
-interface AddressData {
-  id: number;
-  city: string;
-  state: string;
-  country: string;
-  first_name: string;
-  is_primary_: boolean | null;
-  last_name: string;
-  postal_code: string;
-  user_Clerk_id: string;
-  createdAt: Date | null;
-  email: string;
-  phone: string;
-  street: string;
-}
-
 const DeliveryAddress: React.FC = () => {
   const { userId } = useAuth();
   const [_edit, setEdit] = useState(false);
@@ -43,24 +27,14 @@ const DeliveryAddress: React.FC = () => {
   const [isStateValid, setIsStateValid] = useState(true);
   const [submitLoading, setSubmitLoading] = useState(false);
 
-  const [userAddressData, setUserAddressData] = useState<AddressData[]>([]);
-  const [loadingUserAddress, setLoadingUserAddress] = useState(true);
-
      const {
-      data,
-      isLoading,
+      data: userAddressData,
+      isLoading: loadingUserAddress,
       refetch,
     } = api.address.getAddressesByUserId.useQuery({
       user_Clerk_id: userId ? userId : "user_2QCeTGBNmUAEuim42OAnU7E3kuZ",
     });
 
-  useEffect(() => {
-       // Update the state with the received data
-       if(data){
-    setUserAddressData(data as AddressData[]);
-    setLoadingUserAddress(isLoading); // Set loading to false once data is received
-       }
-  }, []);
 
   const createAddressMutation = api.address.createAddress.useMutation();
   const deleteAddressMutation = api.address.deleteAddress.useMutation();

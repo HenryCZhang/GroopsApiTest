@@ -27,20 +27,6 @@ const AddDeliveryAddress: React.FC<AddressProps> = ({ setAddAddress }) => {
   const [isStateValid, setIsStateValid] = useState(true);
   const [submitLoading, setSubmitLoading] = useState(false);
 
-  //testing create address refetch
-  const {
-    data: userAddressData,
-    isLoading: loadingUserAddress,
-    refetch,
-  } = api.address.getAddressesByUserId.useQuery({
-    user_Clerk_id: userId ? userId : "user_2QCeTGBNmUAEuim42OAnU7E3kuZ",
-  });
-
-  const { data: addressData, isLoading: loadingData } =
-    api.address.getAllAddresses.useQuery();
-
-  console.log(`addressData ${addressData}`);
-
   const createAddressMutation = api.address.createAddress.useMutation();
 
   const handleCancel = async (event: any) => {
@@ -81,8 +67,6 @@ const AddDeliveryAddress: React.FC<AddressProps> = ({ setAddAddress }) => {
       console.log(error);
     }
     setSubmitLoading(false);
-    setAddAddress(false);
-    refetch()
   };
 
   const handleFirstNameChange = (
