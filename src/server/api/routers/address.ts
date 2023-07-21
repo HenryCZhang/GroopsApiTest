@@ -43,15 +43,6 @@ export const addressRouter = createTRPCRouter({
       })
     )
     .query(({ ctx, input }) =>
-      // ctx.prisma.address
-      //   .findMany({
-      //     where: {
-      //       user_Clerk_id: input.user_Clerk_id,
-      //     },
-      //     take: 3,
-      //     orderBy: [{ createdAt: "desc" }],
-      //   })
-      //   .then(addUserDataToAddresses)
       {
         try {
           return ctx.prisma.address.findMany({
@@ -80,7 +71,7 @@ export const addressRouter = createTRPCRouter({
         postal_code: z.string(),
         user_Clerk_id: z.string(),
         email: z.string(),
-        phone: z.number(),
+        phone: z.string(),
       })
     )
     .mutation(({ ctx, input }) => {
@@ -115,7 +106,7 @@ export const addressRouter = createTRPCRouter({
         postal_code: z.string(),
         user_Clerk_id: z.string(),
         email: z.string(),
-        phone: z.number(),
+        phone: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {

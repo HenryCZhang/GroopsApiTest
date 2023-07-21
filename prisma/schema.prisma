@@ -19,7 +19,7 @@ model address {
   user_Clerk_id String
   createdAt     DateTime? @default(now())
   email         String
-  phone         Int
+  phone         String
   street        String
 }
 
