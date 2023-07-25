@@ -95,7 +95,7 @@ export const addressRouter = createTRPCRouter({
   updateAddress: publicProcedure
     .input(
       z.object({
-        addressId: z.number(),
+        address_id: z.number(),
         is_primary_: z.boolean(),
         street: z.string(),
         city: z.string(),
@@ -110,20 +110,20 @@ export const addressRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const { addressId, ...updateData } = input;
+      const { address_id, ...updateData } = input;
       // Retrieve the existing address record
       const existingAddress = await ctx.prisma.address.findUnique({
         where: {
-          id: addressId,
+          id: address_id,
         },
       });
       if (!existingAddress) {
-        throw new Error(`Address with ID ${addressId} not found`);
+        throw new Error(`Address with ID ${address_id} not found`);
       }
       // Update the address record
       const updatedAddress = await ctx.prisma.address.update({
         where: {
-          id: addressId,
+          id: address_id,
         },
         data: updateData,
       });

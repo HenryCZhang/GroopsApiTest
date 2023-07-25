@@ -35,8 +35,24 @@ const DeliveryAddress: React.FC = () => {
       user_Clerk_id: userId ? userId : "user_2QCeTGBNmUAEuim42OAnU7E3kuZ",
     });
 
+  useEffect(() => {
+    if (userAddressData) {
+        userAddressData.map((address) => {
+        setFirstName(address.first_name);
+        setLastName(address.last_name);
+        setEmail(address.email);
+        setPhone(address.phone);
+        setCountry(address.country);
+        setCity(address.city);
+        setStreet(address.street);
+        setState(address.state);
+        setZip(address.postal_code);
+      });
+    }
+  }, [userAddressData]);
 
-  const createAddressMutation = api.address.createAddress.useMutation();
+    const ctx = api.useContext();
+  const updateAddressMutation = api.address.updateAddress.useMutation();
   const deleteAddressMutation = api.address.deleteAddress.useMutation();
 
   const handleDelete = async (addressID:number) => {
@@ -56,8 +72,7 @@ const DeliveryAddress: React.FC = () => {
     setEdit(false);
   };
 
-  const createAddress = async (event: any) => {
-    event.preventDefault();
+  const updateAddress = async (address_id: number) => {
     if (
       !userId ||
       !isFirstNameValid ||
@@ -71,7 +86,8 @@ const DeliveryAddress: React.FC = () => {
     }
     setSubmitLoading(true);
     try {
-      await createAddressMutation.mutate({
+      await updateAddressMutation.mutate({
+        address_id: address_id,
         is_primary_: false,
         street: street,
         first_name: firstName,
@@ -82,8 +98,12 @@ const DeliveryAddress: React.FC = () => {
         city: city,
         state: state,
         postal_code: zip,
-        user_Clerk_id: userId, // Provide the user ID here
+        user_Clerk_id: userId,
       });
+
+      await void ctx.address.getAddressesByUserId.invalidate({ user_Clerk_id: userId });
+      await refetch();//refetch data
+      window.location.reload();
     } catch (error) {
       console.log(error);
     }
@@ -205,12 +225,10 @@ const DeliveryAddress: React.FC = () => {
                           placeholder={
                             address.first_name
                               ? address.first_name
-                              : "First Name"
+                              : ""
                           }
                           value={
-                            address.first_name && !_edit
-                              ? address.first_name
-                              : firstName
+                            (address.first_name!=null && !_edit)? address.first_name : firstName
                           }
                           onChange={handleFirstNameChange}
                           id={"address" + index + "first_name"}
@@ -385,7 +403,9 @@ const DeliveryAddress: React.FC = () => {
                       </div>
                     </div>
 
-                    {_edit ? (
+                   
+                  </div>
+                  {_edit ? (
                       <div className="mt-5 flex justify-end gap-x-3 text-gray-800">
                          <button
                           className="rounded-xl text-rose-600 border border-gray-300 bg-white p-3"
@@ -401,7 +421,7 @@ const DeliveryAddress: React.FC = () => {
                         </button>
                         <button
                           className="rounded-xl border bg-rose-600 p-3 text-white"
-                          onClick={createAddress}
+                          onClick={()=>updateAddress(address.id)}
                         >
                           Save
                         </button>
@@ -409,7 +429,6 @@ const DeliveryAddress: React.FC = () => {
                     ) : (
                       ""
                     )}
-                  </div>
                 </div>
               ))}
 
