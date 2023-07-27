@@ -18,6 +18,9 @@ const config = {
     locales: ["en"],
     defaultLocale: "en",
   },
+  images: {
+    domains: ['api.gr-oops.com'],
+  },
 };
 
 export default config;

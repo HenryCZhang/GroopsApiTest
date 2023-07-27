@@ -50,7 +50,7 @@ export const addressRouter = createTRPCRouter({
               user_Clerk_id: input.user_Clerk_id,
             },
             take: 3,
-            orderBy: [{ createdAt: "desc" }],
+            orderBy: [{ created_at: "desc" }],
           })
         } catch (error) {
           console.error(error)

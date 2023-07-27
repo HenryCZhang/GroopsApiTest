@@ -17,17 +17,21 @@ model address {
   last_name     String
   postal_code   String
   user_Clerk_id String
-  createdAt     DateTime? @default(now())
   email         String
   phone         String
   street        String
+  created_at    DateTime? @default(now())
 }
 
 model cart {
-  id            Int       @id @default(autoincrement())
+  id            Int     @id @default(autoincrement())
   quantity      Int
   user_Clerk_id String
-  product       product[] @relation("carttoproduct")
+  product_id    String
+  product       product @relation(fields: [product_id], references: [skuid])
+
+  @@unique([user_Clerk_id, product_id])
+  @@index([product_id], map: "cart_product_id_fkey")
 }
 
 model category {
@@ -94,7 +98,7 @@ model groupmember {
 
 model helpcenterrequest {
   user_Clerk_id String  @id
-  phone         Int
+  phone         String
   description   String? @db.VarChar(45)
   files         files[]
 }
@@ -116,34 +120,23 @@ model lovelistitems {
 }
 
 model order {
-  total            Int?           @default(0)
-  delivery         Float?         @db.Float
-  refund_amount    Decimal?       @db.Decimal(10, 2)
-  delivery_tip     Float?         @db.Float
-  green_fee        Float?         @db.Float
+  total            Int?            @default(0)
+  delivery         Float?          @db.Float
+  refund_amount    Decimal?        @db.Decimal(10, 2)
+  delivery_tip     Float?          @db.Float
+  green_fee        Float?          @db.Float
   group_code       String
-  id               Int            @id @default(autoincrement())
-  order_date       DateTime?      @default(now())
-  payment_intent   String?        @db.VarChar(255)
-  sales_tax        Float?         @db.Float
-  shipping_address String?        @db.Text
-  sub_total        Int?           @default(0)
+  id               Int             @id @default(autoincrement())
+  order_date       DateTime?       @default(now())
+  payment_intent   String?         @db.VarChar(255)
+  sales_tax        Float?          @db.Float
+  shipping_address String?         @db.Text
+  sub_total        Int?            @default(0)
   user_Clerk_id    String
-  group            group          @relation(fields: [group_code], references: [group_code], map: "Order_group_code_fkey")
-  orderproduct     orderproduct[]
+  group            group           @relation(fields: [group_code], references: [group_code], map: "Order_group_code_fkey")
+  orderproducts    orderproducts[]
 
   @@index([group_code], map: "Order_group_code_fkey")
-}
-
-model orderproduct {
-  id         Int     @id @default(autoincrement())
-  order_id   Int
-  product_id String
-  order      order   @relation(fields: [order_id], references: [id], map: "OrderProduct_order_id_fkey")
-  product    product @relation(fields: [product_id], references: [skuid], map: "OrderProduct_product_id_fkey")
-
-  @@index([order_id], map: "OrderProduct_order_id_fkey")
-  @@index([product_id], map: "OrderProduct_product_id_fkey")
 }
 
 model picture {
@@ -161,26 +154,25 @@ model picture {
 model product {
   skuid                String          @id
   description          String?
-  alcohol              Boolean         @default(false)
-  price                Int             @default(0)
+  alcohol              Boolean?        @default(false)
   stock                Int             @default(0)
   alcohol_percentage   Int?            @default(0)
   category_id          Int?
   chinese_product_name String?
-  cost_price           Int             @default(0)
+  cost_price           Int?            @default(0)
   english_product_name String
   french_product_name  String?
   nutrition_fact       String?
   place_of_origin      String?
-  product_weight       String
+  product_weight       String?
   retail_price         Int             @default(0)
   specification        String?
   primary_image_url    String
+  cart                 cart[]
   lovelistitems        lovelistitems[]
-  orderproduct         orderproduct[]
+  orderproducts        orderproducts[]
   picture              picture[]
   category             category?       @relation(fields: [category_id], references: [id], map: "Product_category_id_fkey")
-  cart                 cart[]          @relation("carttoproduct")
 
   @@index([category_id], map: "Product_category_id_fkey")
 }
@@ -189,4 +181,15 @@ model wallet {
   id            Int    @id @default(autoincrement())
   amount        Float? @default(0)
   user_Clerk_id String @unique
+}
+
+model orderproducts {
+  id         Int     @id @default(autoincrement())
+  order_id   Int
+  product_id String
+  order      order   @relation(fields: [order_id], references: [id], map: "OrderProduct_order_id_fkey")
+  product    product @relation(fields: [product_id], references: [skuid], map: "OrderProduct_product_id_fkey")
+
+  @@index([order_id], map: "OrderProduct_order_id_fkey")
+  @@index([product_id], map: "OrderProduct_product_id_fkey")
 }

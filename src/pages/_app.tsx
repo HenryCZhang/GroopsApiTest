@@ -1,6 +1,7 @@
 import { type AppType } from "next/app";
 import { api } from "~/utils/api";
 import "~/styles/globals.css";
+import NavbarBootStrap from "./navbar";
 
 import {
   ClerkProvider,
@@ -12,6 +13,7 @@ import {
 const MyApp: AppType = ({ Component, pageProps }) => {
   return (
     <ClerkProvider {...pageProps}>
+          <NavbarBootStrap />
       <Component {...pageProps} />
     </ClerkProvider>
   );
