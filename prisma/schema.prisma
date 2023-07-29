@@ -153,19 +153,19 @@ model picture {
 
 model product {
   skuid                String          @id
-  description          String?
-  alcohol              Boolean?        @default(false)
-  stock                Int             @default(0)
-  alcohol_percentage   Int?            @default(0)
   category_id          Int?
-  chinese_product_name String?
-  cost_price           Int?            @default(0)
+  description          String?
   english_product_name String
+  chinese_product_name String?
   french_product_name  String?
+  cost_price           Int?            @default(0)
+  retail_price         Int             @default(0)
+  stock                Int             @default(0)
+  alcohol              Boolean?        @default(false)
+  alcohol_percentage   Int?            @default(0)
   nutrition_fact       String?
   place_of_origin      String?
   product_weight       String?
-  retail_price         Int             @default(0)
   specification        String?
   primary_image_url    String
   cart                 cart[]
