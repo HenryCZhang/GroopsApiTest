@@ -13,7 +13,7 @@ export const ImageUploader = async (file:File) => {
     // sslEnabled: false, // Replace with true if your Minio server uses HTTPS
   });
 
-  const bucketName = "img"; // Replace with your Minio bucket name
+  const bucketName = "test"; // Replace with your Minio bucket name
   const fileName = file.name;
   const fileContent = file;
 

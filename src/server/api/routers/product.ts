@@ -20,29 +20,41 @@ export const productRouter = createTRPCRouter({
   createProduct: publicProcedure
     .input(z.object({
       skuid: z.string(),
-      category_id:z.number(),
-      description: z.string(),
+      category_id:z.number().optional(),
+      description: z.string().optional(),
       english_product_name: z.string(),
-      chinese_product_name: z.string(),
-      french_product_name: z.string(),
-      cost_price: z.number(),
+      chinese_product_name: z.string().optional(),
+      french_product_name: z.string().optional(),
+      cost_price: z.number().optional(),
       retail_price: z.number(),
       stock: z.number(),
-      alcohol: z.boolean(),
-      alcohol_percentage: z.number(),
-      nutrition_fact: z.string(),
-      place_of_origin: z.string(),
-      product_weight: z.string(),
-      specification: z.string(),
+      alcohol: z.boolean().optional(),
+      alcohol_percentage: z.number().optional(),
+      nutrition_fact: z.string().optional(),
+      place_of_origin: z.string().optional(),
+      product_weight: z.string().optional(),
+      specification: z.string().optional(),
       primary_image_url: z.string(),
-    })).mutation(({ ctx, input }) => {
+    })).mutation(async ({ ctx, input }) => {
       
-      if (!input.english_product_name || !input.product_weight || !input.primary_image_url || !input.retail_price || !input.category_id) {
+      if ( !input.skuid || !input.english_product_name || !input.primary_image_url || !input.retail_price) {
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
-          message: "English Product Name, Product Weight, Image, Price, and Category ID are required",
+          message: "Product's skuid, English Product Name, Image, and Retail Price are required",
         });
       }
+
+  // Check if a product with the same skuid already exists
+  const existingProduct = await ctx.prisma.product.findUnique({
+    where: { skuid: input.skuid },
+  });
+  if (existingProduct) {
+    throw new TRPCError({
+      code: 'CONFLICT',
+      message: `A product with skuid '${input.skuid}' already exists.`,
+    });
+  }  
+  
       return ctx.prisma.product.create({ data: {
         //skuid String @id @default(cuid())
         skuid: input.skuid,
@@ -62,6 +74,14 @@ export const productRouter = createTRPCRouter({
         specification: input.specification,
         primary_image_url: input.primary_image_url,
       } })
+    }),
+
+    deleteProduct: publicProcedure
+    .input(z.object({ skuid: z.string() }))
+    .mutation(({ ctx, input }) => {
+      return ctx.prisma.product.delete({
+        where: { ...input },
+      });
     }),
 
 });

@@ -8,7 +8,9 @@ import { api } from "~/utils/api";
 import { PhotoIcon } from "@heroicons/react/24/solid";
 
 const ProductUploadPage = () => {
+
   const ctx = api.useContext();
+
   const { mutate: uploadProductMutation, isLoading: isUploading } =
     api.product.createProduct.useMutation({
       onSuccess: (data) => {
@@ -28,22 +30,25 @@ const ProductUploadPage = () => {
       },
       onError: (e) => {
         console.log(e);
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: `${e.message}`,
+        });
       },
     });
 
-  const [selectedStatus, setSelectedStatus] = useState(false);
-  
+  const [alcoholStatus, setAlcoholStatus] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [imageURL, setImageURL] = useState<any>();
-  const [productData, setProductData] = useState({primary_image_url:""});
+  const [productData, setProductData] = useState({ primary_image_url: "" });
 
-  const apiUrl = "http://localhost:3000/api/";
+  const testUrl = "http://localhost:3000/api/";
   const endPointURl = "https://api.gr-oops.com";
 
   const {
     register,
-    setValue,
     handleSubmit,
     formState: { errors },
   } = useForm();
@@ -63,21 +68,24 @@ const ProductUploadPage = () => {
   async function handleRegistration(data: any) {
     setLoading(true);
     if (
-      data.skuid &&
-      data.english_product_name &&
-      data.retail_price &&
-      data.stock &&
-      data.primary_image_url
+      data.skuid!="" &&
+      data.english_product_name!="" &&
+      data.retail_price!="" &&
+      data.stock!="" &&
+      data.primary_image_url!=""
     ) {
-      data.cost_price = parseInt(data.cost_price);
-      data.retail_price = parseInt(data.retail_price);
+      data.cost_price = !Number.isNaN(parseFloat(data.cost_price)) ? parseFloat(data.cost_price) : undefined;
+      data.retail_price = parseFloat(data.retail_price);
       data.stock = parseInt(data.stock);
-      data.category_id = parseInt(data.category_id);
-      data.primary_image_url =
-      imageURL?.name != undefined ? bucketName + "/" + imageURL?.name : "";
-      data.alcohol_percentage = parseInt(data.alcohol_percentage);
-
-      await uploadProductMutation({ ...data });
+      data.category_id = !Number.isNaN(parseInt(data.category_id)) ? parseInt(data.category_id) : undefined;
+      data.primary_image_url = imageURL?.name !== undefined ? bucketName + "/" + imageURL?.name : "";
+      data.alcohol_percentage = !Number.isNaN(parseFloat(data.alcohol_percentage)) ? parseFloat(data.alcohol_percentage) : undefined;
+  
+      try {
+        await uploadProductMutation({ ...data });
+      } catch (e) {
+        console.log(e);
+      }
     } else {
       Swal.fire({
         icon: "error",
@@ -106,7 +114,7 @@ const ProductUploadPage = () => {
                       className="mr-4 h-32 w-32 overflow-hidden shadow-sm"
                       style={{ width: "200%" }}
                     >
-                      {imageURL? (
+                      {imageURL ? (
                         <img
                           src={
                             productData.primary_image_url == ""
@@ -179,7 +187,7 @@ const ProductUploadPage = () => {
                         autoComplete="skuid"
                         className="block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
                       />
-   {errors.skuid && (
+                      {errors.skuid && (
                         <span className="text-rose-600">
                           This field is required
                         </span>
@@ -226,7 +234,7 @@ const ProductUploadPage = () => {
                         autoComplete="english_product_name"
                         className="block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
                       />
-                      {errors.englishProductName && (
+                      {errors.english_product_name && (
                         <span className="text-rose-600">
                           This field is required
                         </span>
@@ -255,12 +263,11 @@ const ProductUploadPage = () => {
                     </div>
                   </div>
 
-                  <div className="col-md-6">
+                  <div className="col-md-6 mt-3">
                     <label
                       htmlFor="frenchProductNName"
                       className="block text-sm font-medium text-gray-700"
                     >
-                      {" "}
                       Product Name (French)
                     </label>
                     <div className="mt-1">
@@ -274,242 +281,64 @@ const ProductUploadPage = () => {
                         autoComplete="given-name"
                         className="block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
                       />
-                      {errors.frenchProductNName && (
-                        <span>This field is required</span>
-                      )}
                     </div>
                   </div>
 
-                  <br></br>
-                  <div className="col-md-6">
+                  <div className="col-md-6 mt-3">
                     <label
-                      htmlFor="placeOfOrigin"
+                      htmlFor="cost_price"
                       className="block text-sm font-medium text-gray-700"
                     >
-                      {" "}
-                      Place Of Origin
-                    </label>
-                    <div className="mt-1">
-                      <input
-                        {...register("placeOfOrigin", {
-                          required: true,
-                          pattern: /^[A-Za-z]+$/,
-                        })}
-                        type="text"
-                        name="placeOfOrigin"
-                        id="placeOfOrigin"
-                        autoComplete="given-name"
-                        className="block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
-                      />
-                      {errors.placeOfOrigin && (
-                        <span>This field is required and text enter only</span>
-                      )}
-                    </div>
-                  </div>
-
-                  <br></br>
-                  <div className="col-md-6">
-                    <label
-                      htmlFor="productWeight"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      {" "}
-                      Product Weight (In KG)
-                    </label>
-                    <div className="mt-1">
-                      <input
-                        {...register("productWeight", {
-                          required: true,
-                          pattern: /^[0-9]+$/,
-                        })}
-                        type="text"
-                        name="productWeight"
-                        id="productWeight"
-                        autoComplete="given-name"
-                        className="block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
-                      />
-                      {errors.productWeight && (
-                        <span>
-                          This field is required and enter number only
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  <br></br>
-                  <div className="col-md-6">
-                    <label
-                      htmlFor="alcohol"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      {" "}
-                      Alcohol
-                    </label>
-                    <div className="mt-1">
-                      <select
-                        className="block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
-                        {...register("alcohol", {
-                          required: true,
-                        })}
-                      >
-                        {alcoholStatus.map((list: any, index: any) => (
-                          <option
-                            key={index}
-                            value={list?.value}
-                            selected={selectedStatus == list.value}
-                          >
-                            {list.label}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-
-                  <br></br>
-                  <div className="col-md-6">
-                    <label
-                      htmlFor="alcoholPercentage"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      {" "}
-                      Alcohol Percentage
-                    </label>
-                    <div className="mt-1">
-                      <input
-                        {...register("alcoholPercentage", {
-                          required: true,
-                          pattern: /^[0-9]+$/,
-                        })}
-                        type="number"
-                        defaultValue="0"
-                        min="0"
-                        max="100"
-                        name="alcoholPercentage"
-                        id="alcoholPercentage"
-                        autoComplete="given-name"
-                        className="block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
-                      />
-                      {errors.alcoholPercentage && (
-                        <span>This field is required</span>
-                      )}
-                    </div>
-                  </div>
-
-                  <br></br>
-                  <div className="col-md-6">
-                    <label
-                      htmlFor="price"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      {" "}
-                      Price
-                    </label>
-                    <div className="mt-1">
-                      <input
-                        {...register("price", {
-                          required: true,
-                          pattern: /^[0-9]+$/,
-                        })}
-                        type="text"
-                        name="price"
-                        id="price"
-                        autoComplete="given-name"
-                        className="block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
-                      />
-                      {errors.price && (
-                        <span>
-                          This field is required and enter number only
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  <div className="col-md-6">
-                    <label
-                      htmlFor="categoryId"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      {" "}
-                      Category
-                    </label>
-                    <div className="mt-1">
-                      <select
-                        className="block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
-                        {...register("categoryId", {
-                          required: true,
-                        })}
-                      >
-                        <option value="">--Select Category--</option>
-                        {categoryList.map((list: any, index: any) => (
-                          <option key={index} value={list.id}>
-                            {list}
-                          </option>
-                        ))}
-                      </select>
-                      {errors.categoryId && <span>This field is required</span>}
-                    </div>
-                  </div>
-                  <div className="col-md-6">
-                    <label
-                      htmlFor="retailPrice"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      {" "}
-                      Retail Price
-                    </label>
-                    <div className="mt-1">
-                      <input
-                        {...register("retailPrice", {
-                          required: true,
-                          pattern: /^[0-9]+$/,
-                        })}
-                        type="text"
-                        name="retailPrice"
-                        id="retailPrice"
-                        autoComplete="given-name"
-                        className="block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
-                      />
-                      {errors.retailPrice && (
-                        <span>
-                          This field is required and enter number only
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  <div className="col-md-6">
-                    <label
-                      htmlFor="costPrice"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      {" "}
                       Cost Price
                     </label>
                     <div className="mt-1">
                       <input
-                        {...register("costPrice", {
-                          required: true,
+                        {...register("cost_price", {
+                          required: false,
                           pattern: /^[0-9]+$/,
                         })}
                         type="text"
-                        name="costPrice"
-                        id="costPrice"
-                        autoComplete="given-name"
+                        name="cost_price"
+                        id="cost_price"
+                        autoComplete="cost_price"
                         className="block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
                       />
-                      {errors.costPrice && (
-                        <span>
-                          This field is required and enter number only
-                        </span>
+                        {errors.cost_price && (
+                        <span className="text-rose-600">numeric value only</span>
                       )}
                     </div>
                   </div>
 
-                  <br></br>
-                  <div className="col-md-6">
+                  <div className="col-md-6 mt-3">
+                    <label
+                      htmlFor="retail_price"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      Retail Price
+                    </label>
+                    <div className="mt-1">
+                      <input
+                        {...register("retail_price", {
+                          required: true,
+                          pattern: /^[0-9]+$/,
+                        })}
+                        type="text"
+                        name="retail_price"
+                        id="retail_price"
+                        autoComplete="retail_price"
+                        className="block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                      />
+                      {errors.retail_price && (
+                        <span className="text-rose-600">This field is required (numeric value only)</span>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="col-md-6 mt-3">
                     <label
                       htmlFor="stock"
                       className="block text-sm font-medium text-gray-700"
                     >
-                      {" "}
                       Stock
                     </label>
                     <div className="mt-1">
@@ -521,20 +350,136 @@ const ProductUploadPage = () => {
                         type="text"
                         name="stock"
                         id="stock"
-                        autoComplete="given-name"
+                        autoComplete="stock"
                         className="block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
                       />
-                      {errors.stock && <span>This field is required</span>}
+                      {errors.stock && (
+                        <span className="text-rose-600">
+                          This field is required (numeric value only)
+                        </span>
+                      )}
                     </div>
                   </div>
 
-                  <br></br>
-                  <div className="col-md-6">
+                  <div className="col-md-6 mt-3">
                     <label
-                      htmlFor="stock"
+                      htmlFor="alcohol"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      Alcohol
+                    </label>
+                    <div className="mt-1">
+                      <select
+                        className="block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                        onChange={(e) =>
+                          setAlcoholStatus(e.target.value === "true")
+                        }
+                      >
+                        <option value="true" label="YES"></option>
+                        <option value="false" label="NO" defaultValue={"false"}></option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {alcoholStatus && (
+                    <div className="col-md-6 mt-3">
+                      <label
+                        htmlFor="alcohol_percentage"
+                        className="block text-sm font-medium text-gray-700"
+                      >
+                        Alcohol Percentage
+                      </label>
+                      <div className="mt-1">
+                        <input
+                          {...register("alcohol_percentage", {
+                            required: false,
+                            pattern: /^[0-9]+$/,
+                          })}
+                          type="number"
+                          defaultValue="0"
+                          min="0"
+                          max="100"
+                          name="alcohol_percentage"
+                          id="alcohol_percentage"
+                          autoComplete="alcohol_percentage"
+                          className="block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="col-md-6 mt-3">
+                    <label
+                      htmlFor="nutrition_fact"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      Nutrition Fact
+                    </label>
+                    <div className="mt-1">
+                      <input
+                        {...register("nutrition_fact", {
+                          required: false,
+                          pattern: /^[A-Za-z]+$/,
+                        })}
+                        type="text"
+                        name="nutrition_fact"
+                        id="nutrition_fact"
+                        autoComplete="nutrition_fact"
+                        className="block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="col-md-6 mt-3">
+                    <label
+                      htmlFor="place_of_origin"
                       className="block text-sm font-medium text-gray-700"
                     >
                       {" "}
+                      Place Of Origin
+                    </label>
+                    <div className="mt-1">
+                      <input
+                        {...register("place_of_origin", {
+                          required: false,
+                          pattern: /^[A-Za-z]+$/,
+                        })}
+                        type="text"
+                        name="place_of_origin"
+                        id="place_of_origin"
+                        autoComplete="place_of_origin"
+                        className="block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="col-md-6 mt-3">
+                    <label
+                      htmlFor="product_weight"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      Product Weight
+                    </label>
+                    <div className="mt-1">
+                      <input
+                        {...register("product_weight", {
+                          required: false,
+                          pattern: /^[0-9]+$/,
+                        })}
+                        type="text"
+                        name="product_weight"
+                        id="product_weight"
+                        autoComplete="product_weight"
+                        className="block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="col-md-6 mt-3">
+                    <label
+                      htmlFor="specification"
+                      className="block text-sm font-medium text-gray-700"
+                    >
                       Specification
                     </label>
                     <div className="mt-1">
@@ -543,55 +488,9 @@ const ProductUploadPage = () => {
                         type="text"
                         name="specification"
                         id="specification"
-                        autoComplete="given-name"
+                        autoComplete="specification"
                         className="block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
                       />
-                    </div>
-                  </div>
-
-                  <br></br>
-                  <div className="col-md-6">
-                    <label
-                      htmlFor="stock"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      {" "}
-                      Nutrition Facts
-                    </label>
-                    <div className="mt-1">
-                      <input
-                        {...register("nutritionFact", {})}
-                        type="text"
-                        name="nutritionFact"
-                        id="nutritionFact"
-                        autoComplete="given-name"
-                        className="block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="col-md-6">
-                    <label
-                      htmlFor="description"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      {" "}
-                      Description
-                    </label>
-                    <div className="mt-1">
-                      <textarea
-                        {...register("description", {
-                          required: true,
-                        })}
-                        rows={3}
-                        name="description"
-                        id="description"
-                        autoComplete="given-name"
-                        className="block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
-                      />
-                      {errors.description && (
-                        <span>This field is required</span>
-                      )}
                     </div>
                   </div>
                   <div className="col-md-12 pt-4 text-right">
@@ -606,26 +505,12 @@ const ProductUploadPage = () => {
                       )}
                     </button>
                   </div>
-
-                  <ul></ul>
                 </div>
               </div>
             </form>
           </div>
         </div>
       </div>
-
-      {/* <main>
-                <form>
-                    <input type="text" className='bg-violet-100' name="title" placeholder="Title" />
-
-                    <input type="text" name="description" placeholder="Description" />
-                    <input type="text" name="price" placeholder="Price" />
-                    <input type="text" name="image" placeholder="Image" />
-                    <input type="text" name="category" placeholder="Category" />
-                    <button type="submit">Submit</button>
-                </form>
-            </main> */}
     </>
   );
 };
