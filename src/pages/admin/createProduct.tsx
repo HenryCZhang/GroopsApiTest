@@ -9,7 +9,21 @@ import { PhotoIcon } from "@heroicons/react/24/solid";
 
 const ProductUploadPage = () => {
 
+  const [alcoholStatus, setAlcoholStatus] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [imageURL, setImageURL] = useState<any>();
+  const [productData, setProductData] = useState({ primary_image_url: "" });
+
+  const endPointURl = "https://api.gr-oops.com";
+  const bucketName = "test"; //change this in production!
   const ctx = api.useContext();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm();
 
   const { mutate: uploadProductMutation, isLoading: isUploading } =
     api.product.createProduct.useMutation({
@@ -27,6 +41,7 @@ const ProductUploadPage = () => {
           icon: "success",
           confirmButtonText: "OK",
         });
+        reset();
       },
       onError: (e) => {
         console.log(e);
@@ -37,23 +52,6 @@ const ProductUploadPage = () => {
         });
       },
     });
-
-  const [alcoholStatus, setAlcoholStatus] = useState(false);
-
-  const [loading, setLoading] = useState(false);
-  const [imageURL, setImageURL] = useState<any>();
-  const [productData, setProductData] = useState({ primary_image_url: "" });
-
-  const testUrl = "http://localhost:3000/api/";
-  const endPointURl = "https://api.gr-oops.com";
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm();
-
-  const bucketName = "test"; //change this in production!
 
   const handleProfilePictureChange = (e: any) => {
     const file = e.target.files[0];

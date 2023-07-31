@@ -29,6 +29,7 @@
     "react-bootstrap": "^2.8.0",
     "react-dom": "18.2.0",
     "react-hook-form": "^7.45.2",
+    "react-loader-spinner": "^5.3.4",
     "superjson": "1.12.2",
     "sweetalert2": "^11.7.20",
     "zod": "^3.21.4"

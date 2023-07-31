@@ -31,10 +31,6 @@ const AdminProduct = () => {
     refetch();
     };
 
-    return(
-      <LoadingSpinner/>
-    )
-
   return (
     <div>
        {loadingproducts || isDeleting ? (
