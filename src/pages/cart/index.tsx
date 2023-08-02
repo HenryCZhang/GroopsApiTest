@@ -2,44 +2,56 @@
 import Slide from "@mui/material/Slide";
 import Link from "next/link";
 import { api } from "~/utils/api";
-import React, { useEffect, useRef } from "react";
-import Product from "../product";
+import React, {  FunctionComponent, useEffect  } from "react";
 import { LoadingSpinner } from "public/components/loading";
 import { useAuth } from "@clerk/nextjs";
+import useLocalStorageState from 'use-local-storage-state'
+
+import Product, { CartProps } from "../product";
+
+interface rowProps{
+  img_url:string,
+  eng_name:string,
+  retail_price:number,
+  quantity:number
+}
+const Row = ({img_url,eng_name,retail_price,quantity}:rowProps) => (
+  <Link href="/product/1">
+    <div className="flex items-center justify-between p-5">
+      <div className="flex items-center gap-x-3">
+        <img src={`https://api.gr-oops.com/${img_url}`} className="w-1/3" />
+        <div className="flex flex-col ">
+          <p className="text-sm text-gray-400">company</p>
+          <p className="text-lg ">{eng_name}</p>
+          <p className="text-sm text-gray-800">$ {retail_price}</p>
+        </div>
+      </div>
+
+      <p>x{quantity}</p>
+    </div>
+    <hr />
+  </Link>
+);
+
+export type Operation = 'decrease' | 'increase'
 
 const Cart = () => {
   const { userId } = useAuth();
+  const [cart, setCart] = useLocalStorageState<CartProps>('cart', {})//use state to store cart
 
+  //fretch cart from api
   const {
     data: cartItems,
     isLoading: loadingcart,
     refetch,
   } = api.cart.getUserCartItems.useQuery({user_Clerk_id: userId??''});
  
-  interface rowProps{
-    img_url:string,
-    eng_name:string,
-    retial_price:number,
-    quantity:number
-  }
+ 
 
-  const Row = ({img_url,eng_name,retial_price,quantity}:rowProps) => (
-    <Link href="/product/1">
-      <div className="flex items-center justify-between p-5">
-        <div className="flex items-center gap-x-3">
-          <img src={`https://api.gr-oops.com/${img_url}`} className="w-1/3" />
-          <div className="flex flex-col ">
-            <p className="text-sm text-gray-400">company</p>
-            <p className="text-lg ">{eng_name}</p>
-            <p className="text-sm text-gray-800">$ {retial_price}</p>
-          </div>
-        </div>
+  const getProducts = () => Object.values(cart || {})
+  const productsInCart = getProducts()
 
-        <p>x{quantity}</p>
-      </div>
-      <hr />
-    </Link>
-  );
+  const totalPrice = getProducts().reduce((accumulator, product) => accumulator + (product.retail_price * product.quantity!), 0)
 
   return (
     <>
@@ -95,16 +107,45 @@ const Cart = () => {
             {loadingcart ? (
               <LoadingSpinner />
             ) : (
-              cartItems?.map((item, index) => (
-                <Row
-                  key={index}
-                  img_url={item.product.primary_image_url}
-                  eng_name={item.product.english_product_name}
-                  retial_price={item.product.retail_price}
-                  quantity={item.quantity}
+              //cart from api
+              // cartItems?.map((item, index) => (
+              //   <Row
+              //     key={index}
+              //     img_url={item.product.primary_image_url}
+              //     eng_name={item.product.english_product_name}
+              //     retial_price={item.product.retail_price}
+              //     quantity={item.quantity}
+              //   />
+              // ))
+
+              //cart from local storage
+              <div>
+              {productsInCart.length > 0 ? (
+                /* JSX to render when products are in the cart */
+                <div>
+                  {productsInCart.map((product) => (
+                 <Row
+                  key={product.skuid}
+                  img_url={product.primary_image_url}
+                  eng_name={product.english_product_name}
+                  retail_price={product.retail_price}
+                  quantity={product.quantity??0}
                 />
-              ))
+                  ))}
+
+                 <p>total price: {totalPrice}</p>
+
+                </div>
+              ) : (
+                /* JSX to render when no products are in the cart */
+                <div>
+                  Cart is empty.
+                </div>
+              )}
+            </div>
             )}
+
+            
        
           </div>
 

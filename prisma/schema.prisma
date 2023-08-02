@@ -153,21 +153,22 @@ model picture {
 
 model product {
   skuid                String          @id
-  category_id          Int?
-  description          String?
+  category_id          Int?   @default(0)
+  description          String? @default("#")
   english_product_name String
-  chinese_product_name String?
-  french_product_name  String?
+  chinese_product_name String?  @default("#")
+  french_product_name  String?  @default("#")
   cost_price           Int?            @default(0)
   retail_price         Int             @default(0)
   stock                Int             @default(0)
   alcohol              Boolean?        @default(false)
   alcohol_percentage   Int?            @default(0)
-  nutrition_fact       String?
-  place_of_origin      String?
-  product_weight       String?
-  specification        String?
+  nutrition_fact       String?  @default("#")
+  place_of_origin      String?  @default("#")
+  product_weight       String?  @default("#")
+  specification        String?  @default("#")
   primary_image_url    String
+  quantity             Int?            @default(0) //for cart 
   cart                 cart[]
   lovelistitems        lovelistitems[]
   orderproducts        orderproducts[]
