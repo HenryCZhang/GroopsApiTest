@@ -120,7 +120,6 @@ model lovelistitems {
 }
 
 model order {
-  total            Int?            @default(0)
   delivery         Float?          @db.Float
   refund_amount    Decimal?        @db.Decimal(10, 2)
   delivery_tip     Float?          @db.Float
@@ -134,7 +133,7 @@ model order {
   sub_total        Int?            @default(0)
   user_Clerk_id    String
   group            group           @relation(fields: [group_code], references: [group_code], map: "Order_group_code_fkey")
-  orderproducts    orderproducts[]
+  products         orderproducts[]
 
   @@index([group_code], map: "Order_group_code_fkey")
 }
@@ -153,25 +152,25 @@ model picture {
 
 model product {
   skuid                String          @id
-  category_id          Int?   @default(0)
-  description          String? @default("#")
-  english_product_name String
-  chinese_product_name String?  @default("#")
-  french_product_name  String?  @default("#")
-  cost_price           Int?            @default(0)
-  retail_price         Int             @default(0)
-  stock                Int             @default(0)
+  description          String?         @default("#")
   alcohol              Boolean?        @default(false)
+  stock                Int             @default(0)
   alcohol_percentage   Int?            @default(0)
-  nutrition_fact       String?  @default("#")
-  place_of_origin      String?  @default("#")
-  product_weight       String?  @default("#")
-  specification        String?  @default("#")
+  category_id          Int?            @default(0)
+  chinese_product_name String?         @default("#")
+  cost_price           Int?            @default(0)
+  english_product_name String
+  french_product_name  String?         @default("#")
+  nutrition_fact       String?         @default("#")
+  place_of_origin      String?         @default("#")
+  product_weight       String?         @default("#")
+  retail_price         Int             @default(0)
+  specification        String?         @default("#")
   primary_image_url    String
-  quantity             Int?            @default(0) //for cart 
+  quantity             Int?            @default(0)
   cart                 cart[]
   lovelistitems        lovelistitems[]
-  orderproducts        orderproducts[]
+  orders               orderproducts[]
   picture              picture[]
   category             category?       @relation(fields: [category_id], references: [id], map: "Product_category_id_fkey")
 
@@ -188,6 +187,7 @@ model orderproducts {
   id         Int     @id @default(autoincrement())
   order_id   Int
   product_id String
+  quantity   Int
   order      order   @relation(fields: [order_id], references: [id], map: "OrderProduct_order_id_fkey")
   product    product @relation(fields: [product_id], references: [skuid], map: "OrderProduct_product_id_fkey")
 

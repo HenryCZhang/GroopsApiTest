@@ -8,6 +8,8 @@ import { useAuth } from "@clerk/nextjs";
 import useLocalStorageState from 'use-local-storage-state'
 
 import Product, { CartProps } from "../product";
+import { CurrencyFormatter } from "public/components/CurrencyFormatter";
+import router from "next/router";
 
 interface rowProps{
   img_url:string,
@@ -37,6 +39,7 @@ export type Operation = 'decrease' | 'increase'
 
 const Cart = () => {
   const { userId } = useAuth();
+  const ctx = api.useContext();
   const [cart, setCart] = useLocalStorageState<CartProps>('cart', {})//use state to store cart
 
   //fretch cart from api
@@ -46,12 +49,37 @@ const Cart = () => {
     refetch,
   } = api.cart.getUserCartItems.useQuery({user_Clerk_id: userId??''});
  
- 
-
+  // products info from local storage
   const getProducts = () => Object.values(cart || {})
   const productsInCart = getProducts()
-
   const totalPrice = getProducts().reduce((accumulator, product) => accumulator + (product.retail_price * product.quantity!), 0)
+
+  const { mutate: placeOrderMutation, isLoading: isPlacingOrder } =
+      api.order.createOrder.useMutation({
+      onSuccess: () => {
+        void ctx.order.getUserOrders.invalidate();
+        //navigate to Order page
+        router.push("/order");
+      },
+      onError: (e) => {
+        console.log(e);
+      },
+    });
+
+  const handlePlaceOrder = async () => {
+    if (!userId) return console.log("no user id");
+    await placeOrderMutation({
+      user_Clerk_id: userId,
+      products: productsInCart.map(product => ({
+        product_skuid: product.skuid,
+        quantity: product.quantity??0
+      })),
+      sub_total: totalPrice,
+      group_code: "group_code_1"
+    })
+
+    setCart({})
+  }
 
   return (
     <>
@@ -104,7 +132,7 @@ const Cart = () => {
           <hr className="mt-2" />
 
           <div className="mt-3 h-1/2 overflow-auto">
-            {loadingcart ? (
+            {loadingcart || isPlacingOrder ? (
               <LoadingSpinner />
             ) : (
               //cart from api
@@ -133,8 +161,14 @@ const Cart = () => {
                 />
                   ))}
 
-                 <p>total price: {totalPrice}</p>
+                 <p>Price: <CurrencyFormatter amount={totalPrice} /></p>
 
+          <div className="mb-5 flex justify-center p-5">
+            <button className="w-[90%] rounded-lg bg-rose-600 p-3 text-white"
+            onClick={handlePlaceOrder}>
+              Place Order
+            </button>
+          </div>
                 </div>
               ) : (
                 /* JSX to render when no products are in the cart */
@@ -145,15 +179,9 @@ const Cart = () => {
             </div>
             )}
 
-            
-       
           </div>
 
-          <div className="mt-5 flex justify-center p-5">
-            <button className="w-[90%] rounded-lg bg-rose-600 p-3 text-white">
-              Check Out
-            </button>
-          </div>
+        
         </div>
     </>
   );
