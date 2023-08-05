@@ -9,7 +9,7 @@ export const ShoppingCartRouter = createTRPCRouter({
     return ctx.prisma.cart.findMany({
       where: { user_Clerk_id: input.user_Clerk_id },
       include: {
-        product: true, // Include the associated product
+        products: true, // Include the associated products
       },
     });
   }),
@@ -47,7 +47,7 @@ export const ShoppingCartRouter = createTRPCRouter({
           data: {
             quantity: 1,
             user_Clerk_id,
-            product: { connect: { skuid: product_id } },
+            products: { connect: { skuid: product_id } },
           },
         });
         return newCartItem;

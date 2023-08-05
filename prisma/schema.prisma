@@ -28,7 +28,7 @@ model cart {
   quantity      Int
   user_Clerk_id String
   product_id    String
-  product       product @relation(fields: [product_id], references: [skuid])
+  products       product @relation(fields: [product_id], references: [skuid])
 
   @@unique([user_Clerk_id, product_id])
   @@index([product_id], map: "cart_product_id_fkey")
@@ -130,6 +130,7 @@ model order {
   payment_intent   String?         @db.VarChar(255)
   sales_tax        Float?          @db.Float
   shipping_address String?         @db.Text
+  total_items      Int?            @default(0)
   sub_total        Int?            @default(0)
   user_Clerk_id    String
   group            group           @relation(fields: [group_code], references: [group_code], map: "Order_group_code_fkey")

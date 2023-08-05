@@ -37,6 +37,12 @@ export const productRouter = createTRPCRouter({
       primary_image_url: z.string(),
     })).mutation(async ({ ctx, input }) => {
       
+       // Reset the ID index of the product table if no records exist
+       const existingProducts = await ctx.prisma.product.count();
+       if (existingProducts === 0) {
+         await ctx. prisma.$executeRaw`ALTER TABLE \`Product\` AUTO_INCREMENT = 1;`;
+       }
+
       if ( !input.skuid || !input.english_product_name || !input.primary_image_url || !input.retail_price) {
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',

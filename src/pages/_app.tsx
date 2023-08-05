@@ -1,14 +1,14 @@
 import { type AppType } from "next/app";
-import { api } from "~/utils/api";
-import "~/styles/globals.css";
-import NavbarBootStrap from "./navbar";
-
 import {
   ClerkProvider,
   SignedIn,
   SignedOut,
   RedirectToSignIn,
 } from "@clerk/nextjs";
+
+import { api } from "~/utils/api";
+import "~/styles/globals.css";
+import NavbarBootStrap from "public/components/navbar";
 
 const MyApp: AppType = ({ Component, pageProps }) => {
   return (

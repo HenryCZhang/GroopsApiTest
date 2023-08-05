@@ -192,12 +192,11 @@ const DeliveryAddress: React.FC = () => {
         <div>
           <div className="items-ceeter flex justify-center">
             <div className="w-[60%] px-36 py-16">
+            <h1 className="mb-3 mt-10 text-2xl">Delivery Addresses</h1>
               {/* display DB addresses */}
               {userAddressData?.map((address, index) => (
                 <div key={index}>
-                  <h1>{`userAddressData length ${userAddressData.length}`}</h1>
                   {/* add new address */}
-                  <h1 className="mb-3 mt-10 text-2xl">Delivery Addresses</h1>
                   <div
                     className="mt-10 rounded-lg bg-white p-10 text-gray-800 shadow-2xl"
                   >

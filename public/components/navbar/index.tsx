@@ -14,8 +14,8 @@ import {
 } from "@clerk/nextjs";
 
 import useLocalStorageState from "use-local-storage-state";
-import { CartProps } from "../product";
 import { CartWidget } from "public/components/CartWidget";
+import { CartProps } from "~/pages/product";
 
 function NavbarBootStrap() {
   const [showCart, setShowCart] = useState(false);
@@ -32,8 +32,6 @@ function NavbarBootStrap() {
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="me-auto">
-              <Nav.Link href="/address">Address</Nav.Link>
-              {/* <Nav.Link href="/admin/createProduct">Admin</Nav.Link> */}
               <NavDropdown title="Admin" id="basic-nav-dropdown">
                 <NavDropdown.Item href="/admin/createProduct">
                   Create Product
@@ -56,6 +54,8 @@ function NavbarBootStrap() {
                   <button className="ml-2">Sign in</button>
                 </SignInButton>
               )}
+                      <Nav.Link href="/address">Address</Nav.Link>
+                      <Nav.Link href="/order">Order</Nav.Link>
             </Nav>
           </Navbar.Collapse>
         </Container>

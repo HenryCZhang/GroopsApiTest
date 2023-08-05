@@ -45,14 +45,15 @@ const Cart = () => {
   //fretch cart from api
   const {
     data: cartItems,
-    isLoading: loadingcart,
+    isLoading: loadingCart,
     refetch,
   } = api.cart.getUserCartItems.useQuery({user_Clerk_id: userId??''});
  
   // products info from local storage
   const getProducts = () => Object.values(cart || {})
   const productsInCart = getProducts()
-  const totalPrice = getProducts().reduce((accumulator, product) => accumulator + (product.retail_price * product.quantity!), 0)
+  const total_items = productsInCart.reduce((accumulator, product) => accumulator +  product.quantity!, 0)
+  const totalPrice = productsInCart.reduce((accumulator, product) => accumulator + (product.retail_price * product.quantity!), 0)
 
   const { mutate: placeOrderMutation, isLoading: isPlacingOrder } =
       api.order.createOrder.useMutation({
@@ -74,6 +75,7 @@ const Cart = () => {
         product_skuid: product.skuid,
         quantity: product.quantity??0
       })),
+      total_items,
       sub_total: totalPrice,
       group_code: "group_code_1"
     })
@@ -132,7 +134,7 @@ const Cart = () => {
           <hr className="mt-2" />
 
           <div className="mt-3 h-1/2 overflow-auto">
-            {loadingcart || isPlacingOrder ? (
+            { isPlacingOrder ? (
               <LoadingSpinner />
             ) : (
               //cart from api
@@ -151,9 +153,9 @@ const Cart = () => {
               {productsInCart.length > 0 ? (
                 /* JSX to render when products are in the cart */
                 <div>
-                  {productsInCart.map((product) => (
+                  {productsInCart.map((product,index) => (
                  <Row
-                  key={product.skuid}
+                  key={index}
                   img_url={product.primary_image_url}
                   eng_name={product.english_product_name}
                   retail_price={product.retail_price}

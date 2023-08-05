@@ -74,7 +74,12 @@ export const addressRouter = createTRPCRouter({
         phone: z.string(),
       })
     )
-    .mutation(({ ctx, input }) => {
+    .mutation(async({ ctx, input }) => {
+        // Reset the ID index of the address table if no records exist
+        const existingAddresses = await ctx.prisma.address.count();
+        if (existingAddresses === 0) {
+          await ctx. prisma.$executeRaw`ALTER TABLE \`Address\` AUTO_INCREMENT = 1;`;
+        }
       return ctx.prisma.address.create({
         data: {
           is_primary_: input.is_primary_,
