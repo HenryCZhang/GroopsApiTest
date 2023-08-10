@@ -21,12 +21,13 @@ export const orderRouter = createTRPCRouter({
         where: { user_Clerk_id: input.user_Clerk_id },
         include: {
           products: true, // Include the associated products
+          group:true,
         },
         orderBy: { order_date: "desc" },
       });
 
       // Fetch product details for each order
-      const ordersWithProductDetails = await Promise.all(
+      const ordersDetails = await Promise.all(
         orders.map(async (order) => {
           const productIds = order.products.map(
             (product) => product.product_id
@@ -34,15 +35,19 @@ export const orderRouter = createTRPCRouter({
           const products = await ctx.prisma.product.findMany({
             where: { skuid: { in: productIds } },
           });
+          const group = await ctx.prisma.group.findUnique({
+            where: { group_code: order.group_code },
+          });
 
           return {
             ...order,
             products: products,
+            group: group,
           };
         })
       );
 
-      return ordersWithProductDetails;
+      return ordersDetails;
     }),
 
   // create a new order api

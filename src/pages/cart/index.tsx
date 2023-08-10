@@ -179,10 +179,11 @@ const Cart = () => {
                  <p>Price: <CurrencyFormatter amount={totalPrice} /></p>
 
           <div className="mb-5 flex justify-center p-5">
-            <button className="w-[90%] rounded-lg bg-rose-600 p-3 text-white"
+            {joinedGroupID?.group_code ? (  <button className="w-[90%] rounded-lg bg-rose-600 p-3 text-white"
             onClick={handlePlaceOrder}>
               Place Order
-            </button>
+            </button>) : (
+            <Link href="/group" className="text-sm text-red-500">Please join a group first</Link>)}
           </div>
                 </div>
               ) : (

@@ -64,10 +64,10 @@ const Orders = () => {
     <div className="mt-10 w-full bg-white p-5" key={order.id}>
       <div className="flex justify-between">
         <div className="flex gap-x-5">
-          <img src="/" className="h-16 rounded-full" />
+        <Image src={`https://api.gr-oops.com/${order.group?.primary_image_url}`} width={100} height={100} alt={`${order.group?.primary_image_url}`}/>
           <div className="flex flex-col justify-center">
             <p className="">group joined</p>
-            <p className="text-gray-400">Group name</p>
+            <p className="text-gray-400">{order.group?.group_name}</p>
           </div>
         </div>
 
