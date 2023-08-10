@@ -56,6 +56,7 @@ function NavbarBootStrap() {
               )}
                       <Nav.Link href="/address">Address</Nav.Link>
                       <Nav.Link href="/order">Order</Nav.Link>
+                      <Nav.Link href="/group">Group</Nav.Link>
             </Nav>
           </Navbar.Collapse>
         </Container>

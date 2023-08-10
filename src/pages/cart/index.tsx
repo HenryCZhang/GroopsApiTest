@@ -6,10 +6,12 @@ import React, {  FunctionComponent, useEffect  } from "react";
 import { LoadingSpinner } from "public/components/loading";
 import { useAuth } from "@clerk/nextjs";
 import useLocalStorageState from 'use-local-storage-state'
+import Image from "next/image";
 
 import Product, { CartProps } from "../product";
 import { CurrencyFormatter } from "public/components/CurrencyFormatter";
 import router from "next/router";
+import { GroupProps } from "../group";
 
 interface rowProps{
   img_url:string,
@@ -40,15 +42,24 @@ export type Operation = 'decrease' | 'increase'
 const Cart = () => {
   const { userId } = useAuth();
   const ctx = api.useContext();
-  const [cart, setCart] = useLocalStorageState<CartProps>('cart', {})//use state to store cart
+  const [cart, setCart] = useLocalStorageState<CartProps>('cart', {})//use local storage to store cart
+  const [joinedGroupID, setJoinedGroupID] = useLocalStorageState<GroupProps>('joinedGroupID',{})
 
   //fretch cart from api
   const {
     data: cartItems,
     isLoading: loadingCart,
-    refetch,
+    refetch:refetchCartItems,
   } = api.cart.getUserCartItems.useQuery({user_Clerk_id: userId??''});
- 
+
+    //fretch joined group info from api
+    const {
+      data: joinedGroup,
+      isLoading: loadingJoinedGroup,
+      refetch:refetchJoinedGroup,
+    } = api.group.getGroupById.useQuery({group_code: joinedGroupID?.group_code??''});
+  
+
   // products info from local storage
   const getProducts = () => Object.values(cart || {})
   const productsInCart = getProducts()
@@ -77,10 +88,15 @@ const Cart = () => {
       })),
       total_items,
       sub_total: totalPrice,
-      group_code: "group_code_1"
+      group_code: joinedGroupID?.group_code??''
     })
 
-    setCart({})
+    setCart({});
+    setJoinedGroupID({group_code:''});
+  }
+
+  if(loadingJoinedGroup || loadingCart){
+    return <LoadingSpinner />
   }
 
   return (
@@ -94,12 +110,9 @@ const Cart = () => {
             <div className="w-1/2">
               <p className="text-sm">groups you joined</p>
               <div className="mt-3 flex items-center gap-x-2">
-                <img
-                  src="/assets/dummy/product.png"
-                  className="w-1/3 rounded-full"
-                />
+               <Image src={`https://api.gr-oops.com/${joinedGroup?.primary_image_url}`} width={100} height={100} alt={`${joinedGroup?.primary_image_url}`}/>
                 <div className="flex flex-col">
-                  <p className="text-lg text-rose-600">Group Name</p>
+                  <p className="text-lg text-rose-600">{joinedGroup?.group_name}</p>
                   <div className="mt-2 flex gap-x-2">
                     <p className=" text-sm text-gray-400">21/50</p>
                     <p className="rounded bg-rose-600 px-2 text-sm text-white">

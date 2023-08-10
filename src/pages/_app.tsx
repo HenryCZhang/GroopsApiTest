@@ -13,8 +13,14 @@ import NavbarBootStrap from "public/components/navbar";
 const MyApp: AppType = ({ Component, pageProps }) => {
   return (
     <ClerkProvider {...pageProps}>
+      <SignedIn>
           <NavbarBootStrap />
       <Component {...pageProps} />
+      </SignedIn>
+
+      <SignedOut>
+        <RedirectToSignIn />
+      </SignedOut>
     </ClerkProvider>
   );
 };
