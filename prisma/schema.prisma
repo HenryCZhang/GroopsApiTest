@@ -195,3 +195,5 @@ model orderproducts {
   @@index([order_id], map: "OrderProduct_order_id_fkey")
   @@index([product_id], map: "OrderProduct_product_id_fkey")
 }
+
+

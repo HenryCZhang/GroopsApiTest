@@ -57,7 +57,7 @@ const Cart = () => {
       data: joinedGroup,
       isLoading: loadingJoinedGroup,
       refetch:refetchJoinedGroup,
-    } = api.group.getGroupById.useQuery({group_code: joinedGroupID?.group_code??''});
+    } = api.group.getGroupByGroupCode.useQuery({group_code: joinedGroupID?.group_code??''});
   
 
   // products info from local storage

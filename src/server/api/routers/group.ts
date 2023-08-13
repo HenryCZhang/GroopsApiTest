@@ -9,12 +9,30 @@ export const groupRouter = createTRPCRouter({
     return ctx.prisma.group.findMany();
   }),
 
-  getGroupById: publicProcedure
+  getGroupByGroupCode: publicProcedure
     .input(z.object({ group_code: z.string() }))
     .query(({ ctx, input }) => {
       return ctx.prisma.group.findUnique({
         where: { group_code: input.group_code },
       });
+    }),
+
+
+    //check if user owns an active group or not
+    getActiveGroupByOwnerId: publicProcedure
+    .input(z.object({ owner_Clerk_id: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const activeOwnedGroup = await ctx.prisma.group.findMany({
+        where: { 
+          owner_Clerk_id: input.owner_Clerk_id ?? "",
+          is_active_: true,
+       },
+      });
+      if (activeOwnedGroup) {
+        return activeOwnedGroup;
+      }else{
+        return null;
+      }
     }),
 
     //need to change the parameters

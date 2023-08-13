@@ -4,6 +4,10 @@ import GroupRow from "public/components/group/row";
 import { api } from "~/utils/api";
 import Link from 'next/link';
 import { LoadingSpinner } from 'public/components/loading';
+import { useState } from 'react';
+import { check } from 'prettier';
+import { useAuth } from "@clerk/nextjs";
+import Swal from "sweetalert2";
 
 //Group type for local storage
 export type GroupProps = {
@@ -12,16 +16,36 @@ export type GroupProps = {
 
 const Index = () => {
   const [joinedGroupID, setJoinedGroupID] = useLocalStorageState<GroupProps>('joinedGroupID',{});
-
+  const [loading, setLoading] = useState(false);
+  const { userId } = useAuth();
   const ctx = api.useContext();
+  
 
     //fretch all groups from api
     const {
       data: groups,
       isLoading: loadingGroups,
-      refetch,
+      refetch: refetchGroups,
     } = api.group.getAllGroups.useQuery();
-   
+
+    //check if the user already owns a group or not
+    const {
+      data: userActiveGroup,
+      isLoading: loadingUserActiveGroup,
+      refetch: refetchUserActiveGroup,
+    } = api.group.getActiveGroupByOwnerId.useQuery({owner_Clerk_id: userId??''});
+
+   const checkUserOwnsGroup = () => {
+    if(userActiveGroup){
+      Swal.fire({
+        title: "Oops!",
+        text: `It seems like you already own a group ${userActiveGroup}`,
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+    }
+   }
+
   const handleJoinGroup =  (group_code: string) => {
     setJoinedGroupID({group_code:group_code});
   }
@@ -55,7 +79,7 @@ const Index = () => {
           </p>
 
           <div className="mt-5 flex justify-center gap-x-5">
-            <button className="rounded-lg bg-rose-600 px-4 py-3 text-white">
+            <button onClick={checkUserOwnsGroup} className="rounded-lg bg-rose-600 px-4 py-3 text-white">
               create a group
             </button>
             <button className="rounded-lg bg-rose-600 px-4 py-3 text-white">
