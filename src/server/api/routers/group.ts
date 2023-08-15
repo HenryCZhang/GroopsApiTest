@@ -28,7 +28,7 @@ export const groupRouter = createTRPCRouter({
           is_active_: true,
        },
       });
-      if (activeOwnedGroup) {
+      if (activeOwnedGroup.length > 0) {
         return activeOwnedGroup;
       }else{
         return null;

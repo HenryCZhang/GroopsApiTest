@@ -8,6 +8,7 @@ import { useState } from 'react';
 import { check } from 'prettier';
 import { useAuth } from "@clerk/nextjs";
 import Swal from "sweetalert2";
+import { useRouter } from 'next/router'
 
 //Group type for local storage
 export type GroupProps = {
@@ -19,7 +20,7 @@ const Index = () => {
   const [loading, setLoading] = useState(false);
   const { userId } = useAuth();
   const ctx = api.useContext();
-  
+  const router = useRouter();
 
     //fretch all groups from api
     const {
@@ -36,13 +37,17 @@ const Index = () => {
     } = api.group.getActiveGroupByOwnerId.useQuery({owner_Clerk_id: userId??''});
 
    const checkUserOwnsGroup = () => {
-    if(userActiveGroup){
+    console.log(`userActiveGroup: ${userActiveGroup}`)
+    if(userActiveGroup!==null){
       Swal.fire({
         title: "Oops!",
-        text: `It seems like you already own a group ${userActiveGroup}`,
+        text: userActiveGroup && `It seems like you already own a group (group code: ${userActiveGroup[0]?.group_code})`,
         icon: "error",
         confirmButtonText: "OK",
       });
+    }else{
+      // e.preventDefault();
+      router.push("/group/create");
     }
    }
 
@@ -55,7 +60,7 @@ const Index = () => {
       setJoinedGroupID({group_code: undefined});
   }
 
-  if(loadingGroups){
+  if(loadingGroups || loadingUserActiveGroup){
     return(<LoadingSpinner/>)
   }
 
@@ -88,7 +93,7 @@ const Index = () => {
           </div>
         </div>
 
-        <img className="w-[30%]" src="/assets/group/logo.png" />
+        {/* <img className="w-[30%]" src="/assets/group/logo.png" /> */}
       </div>
       {groups?.map((group) => (
         <div className='flex justify-center'>
