@@ -1,69 +1,76 @@
-import useLocalStorageState from 'use-local-storage-state'
-
-import GroupRow from "public/components/group/row";
+import useLocalStorageState from "use-local-storage-state";
 import { api } from "~/utils/api";
-import Link from 'next/link';
-import { LoadingSpinner } from 'public/components/loading';
-import { useState } from 'react';
-import { check } from 'prettier';
+import Link from "next/link";
+import { useState } from "react";
+import { check } from "prettier";
 import { useAuth } from "@clerk/nextjs";
 import Swal from "sweetalert2";
-import { useRouter } from 'next/router'
+import { useRouter } from "next/router";
+import Image from 'next/image';
+
+import GroupRow from "public/components/group/row";
+import { LoadingSpinner } from "public/components/loading";
 
 //Group type for local storage
 export type GroupProps = {
   group_code: string | undefined;
-}
+};
 
 const Index = () => {
-  const [joinedGroupID, setJoinedGroupID] = useLocalStorageState<GroupProps>('joinedGroupID',{});
+  const [joinedGroupID, setJoinedGroupID] = useLocalStorageState<GroupProps>(
+    "joinedGroupID",
+    {}
+  );
   const [loading, setLoading] = useState(false);
   const { userId } = useAuth();
   const ctx = api.useContext();
   const router = useRouter();
 
-    //fretch all groups from api
-    const {
-      data: groups,
-      isLoading: loadingGroups,
-      refetch: refetchGroups,
-    } = api.group.getAllGroups.useQuery();
+  //fretch all groups from api
+  const {
+    data: groups,
+    isLoading: loadingGroups,
+    refetch: refetchGroups,
+  } = api.group.getAllGroups.useQuery();
 
-    //check if the user already owns a group or not
-    const {
-      data: userActiveGroup,
-      isLoading: loadingUserActiveGroup,
-      refetch: refetchUserActiveGroup,
-    } = api.group.getActiveGroupByOwnerId.useQuery({owner_Clerk_id: userId??''});
+  //check if the user already owns a group or not
+  const {
+    data: userActiveGroups,
+    isLoading: loadinguserActiveGroups,
+    refetch: refetchuserActiveGroups,
+  } = api.group.getActiveGroupByOwnerId.useQuery({
+    owner_Clerk_id: userId ?? "",
+  });
 
-   const checkUserOwnsGroup = () => {
-    console.log(`userActiveGroup: ${userActiveGroup}`)
-    if(userActiveGroup!==null){
+  const checkUserOwnsGroup = () => {
+    console.log(`userActiveGroups: ${userActiveGroups}`);
+    if (userActiveGroups !== null) {
       Swal.fire({
         title: "Oops!",
-        text: userActiveGroup && `It seems like you already own a group (group code: ${userActiveGroup[0]?.group_code})`,
+        text:
+          userActiveGroups &&
+          `It seems like you already own a group (group code: ${userActiveGroups[0]?.group_code})`,
         icon: "error",
         confirmButtonText: "OK",
       });
-    }else{
+    } else {
       // e.preventDefault();
       router.push("/group/create");
     }
-   }
+  };
 
-  const handleJoinGroup =  (group_code: string) => {
-    setJoinedGroupID({group_code:group_code});
+  const handleJoinGroup = (group_code: string) => {
+    setJoinedGroupID({ group_code: group_code });
+  };
+
+  const handleLeaveGroup = () => {
+    //remove group from local storage
+    setJoinedGroupID({ group_code: undefined });
+  };
+
+  if (loadingGroups || loadinguserActiveGroups) {
+    return <LoadingSpinner />;
   }
-
-  const handleLeaveGroup =  () => {
-     //remove group from local storage
-      setJoinedGroupID({group_code: undefined});
-  }
-
-  if(loadingGroups || loadingUserActiveGroup){
-    return(<LoadingSpinner/>)
-  }
-
 
   return (
     <div>
@@ -84,7 +91,10 @@ const Index = () => {
           </p>
 
           <div className="mt-5 flex justify-center gap-x-5">
-            <button onClick={checkUserOwnsGroup} className="rounded-lg bg-rose-600 px-4 py-3 text-white">
+            <button
+              onClick={checkUserOwnsGroup}
+              className="rounded-lg bg-rose-600 px-4 py-3 text-white"
+            >
               create a group
             </button>
             <button className="rounded-lg bg-rose-600 px-4 py-3 text-white">
@@ -96,23 +106,54 @@ const Index = () => {
         {/* <img className="w-[30%]" src="/assets/group/logo.png" /> */}
       </div>
       {groups?.map((group) => (
-        <div className='flex justify-center'>
-          <div>
-        <div>{group.group_name}</div>
-        <div>{group.group_code}</div>
-        {/* display join button on all groups if user joined no group*/}
-        {(joinedGroupID?.group_code ===undefined || joinedGroupID?.group_code ==='')? <button onClick={()=>handleJoinGroup(group.group_code)} className='bg-rose-600 text-white mr-5'>Join</button>:''}
-        {/* show leave button under the group that the user joined  */}
-        {joinedGroupID?.group_code===group.group_code && 
-        <div>
-        <button onClick={handleLeaveGroup} className='bg-rose-600 text-white'>Leave</button> 
-        <Link href="/product"> Shop </Link>
-        </div>
-        }
-        </div>
+        <div className="flex justify-center">
+          <div className="bg-rose-200 m-3 p-4">
+          <Image
+                src={`https://api.gr-oops.com/${group?.primary_image_url}`}
+                width={100}
+                height={100}
+                alt={`${group?.primary_image_url}`}
+              />
+          <div>{group.group_name}</div>
+          <div>{group.group_code}</div>
+          {/* show 'owened' if the user owns the group */}
+          {userActiveGroups &&
+            group.group_code === userActiveGroups[0]?.group_code && (
+              <div className="flex justify-center">
+                <div className="bg-gray-600 text-white">Owned</div>
+                <Link href="/group/ownedGroup" className="ml-2 text-rose-600"> View Group </Link>
+              </div>
+            )}
+          {/* display join button on all groups if user joined no group*/}
+          {joinedGroupID?.group_code === undefined ||
+          (joinedGroupID?.group_code === "" &&
+            (!userActiveGroups ||
+              (userActiveGroups &&
+                group.group_code !== userActiveGroups[0]?.group_code))) ? (
+            <button
+              onClick={() => handleJoinGroup(group.group_code)}
+              className="mr-5 bg-rose-600 text-white"
+            >
+              Join
+            </button>
+          ) : (
+            ""
+          )}
+          {/* show leave button under the group that the user joined  */}
+          {joinedGroupID?.group_code === group.group_code && (
+            <div>
+              <button
+                onClick={handleLeaveGroup}
+                className="bg-rose-600 text-white"
+              >
+                Leave
+              </button>
+              <Link href="/product"> Shop </Link>
+            </div>
+          )}
+                  </div>
         </div>
       ))}
-          
 
       {/* <div className="flex justify-between gap-x-10 p-36">
         <div className="flex flex-col items-center w-1/4">

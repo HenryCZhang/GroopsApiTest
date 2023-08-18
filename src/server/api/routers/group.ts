@@ -58,6 +58,14 @@ export const groupRouter = createTRPCRouter({
       });
     }),
 
+    // EditGroup: publicProcedure
+    // .input(z.object({ group_code: z.string() }))
+    // .mutation(({ ctx, input }) => {
+    //   return ctx.prisma.group.update({
+    //     where: { group_code: input.group_code },
+    //   });
+    // }),
+
   deleteGroup: publicProcedure
     .input(z.object({ group_code: z.string() }))
     .mutation(({ ctx, input }) => {

@@ -56,7 +56,15 @@ function NavbarBootStrap() {
               )}
                       <Nav.Link href="/address">Address</Nav.Link>
                       <Nav.Link href="/order">Order</Nav.Link>
-                      <Nav.Link href="/group">Group</Nav.Link>
+                      <NavDropdown title="Group" id="basic-nav-dropdown">
+                <NavDropdown.Item href="/group">
+                  All Groups
+                </NavDropdown.Item>
+                <NavDropdown.Divider />
+                <NavDropdown.Item href="/group/onwedGroup">
+                  My Group
+                </NavDropdown.Item>
+              </NavDropdown>
             </Nav>
           </Navbar.Collapse>
         </Container>
