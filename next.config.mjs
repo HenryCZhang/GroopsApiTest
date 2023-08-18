@@ -19,7 +19,7 @@ const config = {
     defaultLocale: "en",
   },
   images: {
-    domains: ['api.gr-oops.com'],
+    domains: ['api.gr-oops.com','img.clerk.com'],
   },
 };
 

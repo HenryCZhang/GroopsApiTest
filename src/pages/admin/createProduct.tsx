@@ -31,7 +31,6 @@ const ProductUploadPage = () => {
         void ctx.product.getAllProducts.invalidate();
         setLoading(false);
         setProductData({
-          //testing
           ...productData,
           ...data,
         });
@@ -53,7 +52,7 @@ const ProductUploadPage = () => {
       },
     });
 
-  const handleProfilePictureChange = (e: any) => {
+  const handleProductPictureChange = (e: any) => {
     const file = e.target.files[0];
     setImageURL(file);
     ImageUploader(file);
@@ -152,7 +151,7 @@ const ProductUploadPage = () => {
                         >
                           <span>Upload a file</span>
                           <input
-                            onChange={handleProfilePictureChange}
+                            onChange={handleProductPictureChange}
                             id="file-upload"
                             name="file-upload"
                             type="file"

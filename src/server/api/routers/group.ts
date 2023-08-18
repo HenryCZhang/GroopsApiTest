@@ -41,16 +41,18 @@ export const groupRouter = createTRPCRouter({
       z.object({
         owner_Clerk_id: z.string(),
         group_name: z.string(),
+        description:z.string(),
         primary_image_url: z.string(),
         duration: z.number(),
       })
     )
     .mutation(({ ctx, input }) => {
-        const {owner_Clerk_id, group_name, primary_image_url, duration} = input;
+        const {owner_Clerk_id, description, group_name, primary_image_url, duration} = input;
       return ctx.prisma.group.create({
         data: {
         owner_Clerk_id,
         group_name,
+        description,
         primary_image_url,
         duration,
         group_code: generateCode(),
