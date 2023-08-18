@@ -18,6 +18,13 @@ const OwnedGroup = () => {
   if (loadingUserActiveGroups) {
     return <LoadingSpinner />;
   }
+  if(!userActiveGroups){
+    return(
+        <div className="flex h-screen items-center justify-center">
+            <h1>You are not hosting any group</h1>
+            </div>
+    )
+  }
 
   return (
     <div>

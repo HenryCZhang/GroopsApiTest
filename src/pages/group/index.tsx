@@ -8,7 +8,7 @@ import Swal from "sweetalert2";
 import { useRouter } from "next/router";
 import Image from 'next/image';
 
-import GroupRow from "public/components/group/row";
+// import GroupRow from "public/components/group/row";
 import { LoadingSpinner } from "public/components/loading";
 
 //Group type for local storage

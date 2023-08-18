@@ -61,7 +61,7 @@ function NavbarBootStrap() {
                   All Groups
                 </NavDropdown.Item>
                 <NavDropdown.Divider />
-                <NavDropdown.Item href="/group/onwedGroup">
+                <NavDropdown.Item href="/group/ownedGroup">
                   My Group
                 </NavDropdown.Item>
               </NavDropdown>
