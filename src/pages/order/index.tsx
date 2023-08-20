@@ -20,7 +20,7 @@ const Orders = () => {
     user_Clerk_id: userId ?? "",
   });
 
-  const { mutate: deleteOrderMutation, isLoading: isPlacingOrder } =
+  const { mutate: deleteOrderMutation, isLoading: isDeletingOrder } =
     api.order.deleteOrder.useMutation({
       onSuccess: () => {
         void ctx.order.getUserOrders.invalidate();
@@ -68,10 +68,10 @@ const Orders = () => {
           <div className="flex justify-between">
             <div className="flex gap-x-5">
               <Image
-                src={`https://api.gr-oops.com/${order.group?.primary_image_url}`}
+                src={`https://api.gr-oops.com/${order.group?.group_image_url}`}
                 width={100}
                 height={100}
-                alt={`${order.group?.primary_image_url}`}
+                alt={`${order.group?.group_image_url}`}
               />
               <div className="flex flex-col justify-center">
                 <p className="">group joined</p>

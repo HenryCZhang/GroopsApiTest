@@ -59,6 +59,23 @@ const Index = () => {
     }
   };
 
+  const { mutate: deleteGroupMutation, isLoading: isDeletingGroup } =
+  api.group.deleteGroup.useMutation({
+    onSuccess: () => {
+      void ctx.order.getUserOrders.invalidate();
+      refetchGroups();
+      setLoading(false);
+    },
+    onError: (e) => {
+      console.log(e);
+    },
+  });
+
+const handleDeleteGroup = async (group_code: string) => {
+  setLoading(true);
+  await deleteGroupMutation({ group_code });
+};
+
   const handleJoinGroup = (group_code: string) => {
     setJoinedGroupID({ group_code: group_code });
   };
@@ -68,7 +85,7 @@ const Index = () => {
     setJoinedGroupID({ group_code: undefined });
   };
 
-  if (loadingGroups || loadinguserActiveGroups) {
+  if (loading || loadingGroups || loadinguserActiveGroups) {
     return <LoadingSpinner />;
   }
 
@@ -107,20 +124,21 @@ const Index = () => {
       </div>
       {groups?.map((group) => (
         <div className="flex justify-center">
-          <div className="bg-rose-200 m-3 p-4">
+          {group.is_active_ && <div className="bg-rose-200 m-3 p-4">
           <Image
-                src={`https://api.gr-oops.com/${group?.primary_image_url}`}
+                src={`https://api.gr-oops.com/${group?.group_image_url}`}
                 width={100}
                 height={100}
-                alt={`${group?.primary_image_url}`}
+                alt={`${group?.group_image_url}`}
               />
           <div>{group.group_name}</div>
-          <div>{group.group_code}</div>
+          <div>group code: {group.group_code}</div>
+          <div>group owner: {group.owner_Clerk_id}</div>
           {/* show 'owened' if the user owns the group */}
           {userActiveGroups &&
             group.group_code === userActiveGroups[0]?.group_code && (
-              <div className="flex justify-center">
-                <div className="bg-gray-600 text-white">Owned</div>
+              <div className="flex justify-begin">
+                <div className="bg-white text-rose-600 border-rose-600 border-2 rounded-md">Owned</div>
                 <Link href="/group/ownedGroup" className="ml-2 text-rose-600"> View Group </Link>
               </div>
             )}
@@ -151,9 +169,21 @@ const Index = () => {
               <Link href="/product"> Shop </Link>
             </div>
           )}
-                  </div>
+           <button
+                  className="bg-gray-600 text-white mt-2"
+                  onClick={() => {
+                    handleDeleteGroup(group.group_code);
+                  }}
+                >
+                  Delete Group (admin)
+                </button>
+                  </div>}
+         
+                 
         </div>
       ))}
+
+
 
       {/* <div className="flex justify-between gap-x-10 p-36">
         <div className="flex flex-col items-center w-1/4">

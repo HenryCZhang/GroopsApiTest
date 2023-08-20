@@ -62,7 +62,8 @@ model group {
   tag_1             String?          @db.VarChar(100)
   tag_2             String?          @db.VarChar(100)
   owner_Clerk_id    String
-  primary_image_url String?          @db.VarChar(100)
+  owner_image_url String?          @db.VarChar(100)
+  group_image_url String?          @db.VarChar(100)
   groupcohost       groupcohost[]
   groupcomission    groupcomission[]
   groupmember       groupmember?
