@@ -20,7 +20,7 @@ export const productRouter = createTRPCRouter({
   createProduct: publicProcedure
     .input(z.object({
       skuid: z.string(),
-      category_id:z.number().optional(),
+      category_id:z.number(),
       description: z.string().optional(),
       english_product_name: z.string(),
       chinese_product_name: z.string().optional(),

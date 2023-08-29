@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import Heart from "@public/assets/icons/heart.svg";
+// import Heart from "@public/assets/icons/heart.svg";
 
 const Order: React.FC = () => {
   const router = useRouter();
@@ -69,7 +69,7 @@ const Order: React.FC = () => {
           <p>Food name</p>
           <p>Flavor</p>
           <p className="mt-5 flex gap-x-3 text-gray-400">
-            <Heart className="w-4" />
+            {/* <Heart className="w-4" /> */}
             Add to lovelist
           </p>
         </div>

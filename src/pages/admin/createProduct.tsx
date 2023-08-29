@@ -66,12 +66,14 @@ const ProductUploadPage = () => {
     setLoading(true);
     if (
       data.skuid!="" &&
+      data.category_id!="" &&
       data.english_product_name!="" &&
       data.retail_price!="" &&
       data.stock!="" &&
       data.primary_image_url!=""
     ) {
       data.cost_price = !Number.isNaN(parseFloat(data.cost_price)) ? parseFloat(data.cost_price) : undefined;
+      data.category_id = parseInt(data.category_id);
       data.retail_price = parseFloat(data.retail_price);
       data.stock = parseInt(data.stock);
       data.category_id = !Number.isNaN(parseInt(data.category_id)) ? parseInt(data.category_id) : undefined;
@@ -185,6 +187,32 @@ const ProductUploadPage = () => {
                         className="block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
                       />
                       {errors.skuid && (
+                        <span className="text-rose-600">
+                          This field is required
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="col-md-6">
+                    <label
+                      htmlFor="category_id"
+                      className="mt-3 block text-sm font-medium text-gray-700"
+                    >
+                      category id
+                    </label>
+                    <div className="mt-1">
+                      <input
+                        {...register("category_id", {
+                          required: true,
+                        })}
+                        type="number"
+                        name="category_id"
+                        id="category_id"
+                        autoComplete="category_id"
+                        className="block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                      />
+                      {errors.category_id && (
                         <span className="text-rose-600">
                           This field is required
                         </span>

@@ -145,7 +145,7 @@ const Product = () => {
         <LoadingSpinner />
       ) : (
         products?.map((product, index) => (
-          <div key={index}>
+          <div key={index} className="mt-3 w-32 border-rose-300 border-2">
             <div key={product.skuid}>
               <Image
                 src={`https://api.gr-oops.com/${product.primary_image_url}`}
