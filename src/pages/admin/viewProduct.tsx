@@ -37,6 +37,8 @@ const AdminProduct = () => {
         <LoadingSpinner />
       ) : (
         products?.map((product,index) => (
+          <div className='flex items-center justify-center'>
+          <div key={index} className="mt-3 w-32 border-rose-300 border-2">
             <div key={index}>
             <div key={product.skuid}>
                 <Image src={`https://api.gr-oops.com/${product.primary_image_url}`} alt={product.primary_image_url} width="100" height="100"/>
@@ -44,6 +46,8 @@ const AdminProduct = () => {
                 <p>retail_price: ${product.retail_price}</p>
                 </div>
                 <button className='p-3 bg-rose-600 text-white' onClick={() => handleDeleteItem(product.skuid)}>Delete</button>
+            </div>
+            </div>
             </div>
         ))
         )}
