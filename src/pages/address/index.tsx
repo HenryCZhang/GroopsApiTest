@@ -52,13 +52,13 @@ const DeliveryAddress: React.FC = () => {
   }, [userAddressData]);
 
     const ctx = api.useContext();
-  const updateAddressMutation = api.address.updateAddress.useMutation();
-  const deleteAddressMutation = api.address.deleteAddress.useMutation();
+  const {mutate:updateAddressMutation,isLoading:isUpdatingGroup} = api.address.updateAddress.useMutation();
+  const {mutate:deleteAddressMutation,isLoading:isDeletingGroup} = api.address.deleteAddress.useMutation();
 
   const handleDelete = async (addressID:number) => {
     //delete address
     try {
-      await deleteAddressMutation.mutateAsync({ id: addressID ? addressID : 1 });
+      await deleteAddressMutation({ id: addressID ? addressID : 1 });
       // await refetch();
       window.location.reload();
     } catch (error) {
@@ -86,7 +86,7 @@ const DeliveryAddress: React.FC = () => {
     }
     setSubmitLoading(true);
     try {
-      await updateAddressMutation.mutate({
+      await updateAddressMutation({
         address_id: address_id,
         is_primary_: false,
         street: street,
@@ -186,7 +186,7 @@ const DeliveryAddress: React.FC = () => {
 
   return (
     <>
-      {loadingUserAddress || submitLoading ? (
+      {loadingUserAddress || submitLoading ||isUpdatingGroup || isDeletingGroup ? (
         <LoadingSpinner />
       ) : (
         <div>
@@ -201,7 +201,10 @@ const DeliveryAddress: React.FC = () => {
                     className="mt-10 rounded-lg bg-white p-10 text-gray-800 shadow-2xl"
                   >
                     <div className="flex justify-between">
+                      <div>
                     <h2>Address {index + 1}</h2>
+                    <h5>(Address ID: {address.id})</h5>
+                    </div>
                     {!_edit ? (
                       <button
                         onClick={() => {

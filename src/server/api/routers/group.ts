@@ -47,7 +47,14 @@ export const groupRouter = createTRPCRouter({
         duration: z.number(),
       })
     )
-    .mutation(({ ctx, input }) => {
+    .mutation(async ({ ctx, input }) => {
+      
+         // Reset the ID index of the product table if no records exist
+         const existingGroups = await ctx.prisma.group.count();
+         if (existingGroups === 0) {
+           await ctx. prisma.$executeRaw`ALTER TABLE \`Group\` AUTO_INCREMENT = 1;`;
+         }
+
       return ctx.prisma.group.create({
         data: {
           ...input,

@@ -32,13 +32,22 @@ const OwnedGroup = () => {
         <div className="flex h-screen items-center justify-center">
           <div className="m-3 bg-rose-200 p-5">
             <Image
-              src={`https://api.gr-oops.com/${group?.group_image_url}`}
-              width={100}
-              height={100}
-              alt={`${group?.group_image_url}`}
-            />
-            <div>{group.group_name}</div>
-            <div>{group.group_code}</div>
+                src={`https://api.gr-oops.com/${group?.group_image_url}`}
+                width={100}
+                height={100}
+                alt={`${group?.group_image_url}`}
+              />
+          <div>{group.group_name}</div>
+          <div>group code: {group.group_code}</div>
+          <div>group owner: {group.owner_Clerk_id}</div>
+          <Image
+                src={`https://api.gr-oops.com/${group?.owner_image_url}`}
+                width={100}
+                height={100}
+                alt={`${group?.owner_image_url}`}
+                className="rounded-full w-20 h-20"
+              />
+              <div className="bg-white text-rose-600 border-rose-600 border-2 rounded-md w-14 mt-2">Owned</div>
           </div>
         </div>
       ))}

@@ -27,7 +27,7 @@ const AddDeliveryAddress: React.FC<AddressProps> = ({ setAddAddress }) => {
   const [isStateValid, setIsStateValid] = useState(true);
   const [submitLoading, setSubmitLoading] = useState(false);
 
-  const createAddressMutation = api.address.createAddress.useMutation();
+  const {mutate:createAddressMutation, isLoading:addingAddressAPI} = api.address.createAddress.useMutation();
 
   const handleCancel = async (event: any) => {
     event.preventDefault();
@@ -50,7 +50,7 @@ const AddDeliveryAddress: React.FC<AddressProps> = ({ setAddAddress }) => {
     }
     setSubmitLoading(true);
     try {
-      await createAddressMutation.mutate({
+      await createAddressMutation({
         is_primary_: false,
         street: street,
         first_name: firstName,
@@ -142,7 +142,7 @@ const AddDeliveryAddress: React.FC<AddressProps> = ({ setAddAddress }) => {
     setZip(value);
   };
 
-  if (submitLoading) {
+  if (submitLoading||addingAddressAPI) {
     return <LoadingSpinner />;
   }
 

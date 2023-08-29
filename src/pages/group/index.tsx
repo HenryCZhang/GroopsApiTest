@@ -66,7 +66,7 @@ const Index = () => {
       refetchGroups();
       setLoading(false);
     },
-    onError: (e) => {
+    onError: (e:any) => {
       console.log(e);
     },
   });
@@ -134,6 +134,13 @@ const handleDeleteGroup = async (group_code: string) => {
           <div>{group.group_name}</div>
           <div>group code: {group.group_code}</div>
           <div>group owner: {group.owner_Clerk_id}</div>
+          <Image
+                src={`https://api.gr-oops.com/${group?.owner_image_url}`}
+                width={100}
+                height={100}
+                alt={`${group?.owner_image_url}`}
+                className="rounded-full w-20 h-20"
+              />
           {/* show 'owened' if the user owns the group */}
           {userActiveGroups &&
             group.group_code === userActiveGroups[0]?.group_code && (
