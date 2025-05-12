@@ -126,11 +126,6 @@ Run `npx prisma studio` to access the GUI to view and edit data in your database
 npx prisma studio
 ```
 
-Run `npx prisma studio` to access the GUI to view and edit data in your database
-```yaml
-npx prisma studio
-```
-
 6. View the app locally
 ```yaml
 npm run dev
